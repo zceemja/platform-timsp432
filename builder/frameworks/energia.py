@@ -33,6 +33,8 @@ platform = env.PioPlatform()
 
 FRAMEWORK_DIR = platform.get_package_dir("framework-energiamsp432r")
 FRAMEWORK_VERSION = platform.get_package_version("framework-energiamsp432r")
+TIRTOS_DIR = join(platform.get_package_dir("framework-energiamsp432r"), "system", "kernel", "tirtos")
+
 assert isdir(FRAMEWORK_DIR)
 
 board = env.BoardConfig()
@@ -50,7 +52,6 @@ env.Append(
     CPPPATH=[
         join(FRAMEWORK_DIR, "cores", env.BoardConfig().get("build.core")),
         join(variants_dir, board.get("build.variant")),
-        # join(platform.get_package_dir("toolchain-timsp430"), "msp430", "include")
     ],
 
     LIBSOURCE_DIRS=[
@@ -66,7 +67,9 @@ libs = []
 
 libs.append(env.BuildLibrary(
     join("$BUILD_DIR", "FrameworkEnergia"),
-    join(FRAMEWORK_DIR, "cores", board.get("build.core"))
+    join(FRAMEWORK_DIR, "cores", board.get("build.core")),
+    join(TIRTOS_DIR, "packages", "ti"),
+    join(TIRTOS_DIR, "packages", "gnu"),
 ))
 
 env.Append(LIBS=libs)

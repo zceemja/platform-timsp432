@@ -33,6 +33,11 @@
       "optional": true,
       "version": "https://git.infcof.com/UCL/framework-energiamsp432.git"
     },
+    "toolchain-gccarmnoneeabi": {
+      "type": "toolchain",
+      "owner": "platformio",
+      "version": "^1.80301.190214"
+    },
     "tool-dslite": {
       "type": "uploader",
       "optional": true,
