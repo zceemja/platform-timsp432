@@ -33,12 +33,18 @@ env.Append(
         "-Os",
         "-ffunction-sections",  # place each function in its own section
         "-fdata-sections",
-        "-mmcu=$BOARD_MCU"
+        "-mcpu=$BOARD_MCU",
+        "-mfpu=fpv4-sp-d16",
+        "-mabi=aapcs",
+        "-mfloat-abi=hard",
     ],
 
     CXXFLAGS=[
         "-fno-exceptions",
-        "-fno-threadsafe-statics"
+        "-fno-threadsafe-statics",
+        "-ffunction-sections",
+        "-fdata-sections",
+        "-fno-rtti"
     ],
 
     CPPDEFINES=[
@@ -47,7 +53,7 @@ env.Append(
 
     LINKFLAGS=[
         "-Os",
-        "-mmcu=$BOARD_MCU",
+        "-mcpu=$BOARD_MCU",
         "-Wl,-gc-sections,-u,main"
     ],
 
