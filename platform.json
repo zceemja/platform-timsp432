@@ -1,0 +1,43 @@
+{
+  "name": "timsp432",
+  "title": "TI MSP432",
+  "description": "The MSP432 is a mixed-signal microcontroller family from Texas Instruments. It is based on a 32-bit ARM Cortex-M4F CPU, and extends their 16-bit MSP430 line, with a larger address space for code and data, and faster integer and floating point calculation than the MSP430. Like the MSP430, it has a number of built-in peripheral devices, and is designed for low power requirements.",
+  "homepage": "http://www.ti.com/lsds/ti/microcontrollers_16-bit_32-bit/msp/overview.page",
+  "license": "Apache-2.0",
+  "keywords": [
+      "dev-platform",
+      "Texas Instruments",
+      "MSP432"
+  ],
+  "engines": {
+    "platformio": "^5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zceemja/platform-timsp432.git"
+  },
+  "version": "0.1.0",
+  "frameworks": {
+    "arduino": {
+      "package": "framework-energiamsp432r",
+      "script": "builder/frameworks/energia.py"
+    },
+    "energia": {
+      "package": "framework-energiamsp432r",
+      "script": "builder/frameworks/energia.py"
+    }
+  },
+  "packages": {
+    "framework-energiamsp432r": {
+      "type": "framework",
+      "optional": true,
+      "version": "https://git.infcof.com/UCL/framework-energiamsp432.git"
+    },
+    "tool-dslite": {
+      "type": "uploader",
+      "optional": true,
+      "owner": "platformio",
+      "version": "~1.90200.1400"
+    }
+  }
+}

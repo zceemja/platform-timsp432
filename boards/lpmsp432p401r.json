@@ -1,0 +1,26 @@
+{
+  "build": {
+    "core": "msp432r",
+    "extra_flags": "-DENERGIA_MSP_EXP432P401R -DENERGIA_ARCH_MSP432R -D__MSP432P401R__",
+    "f_cpu": "48000000L",
+    "hwids": [
+      [
+        "0x2341",
+        "0x0c9f"
+      ]
+    ],
+    "mcu": "cortex-m4",
+    "variant": "MSP_EXP432P401R"
+  },
+  "frameworks": [
+    "arduino"
+  ],
+  "name": "TI LaunchPad MSP‑EXP432P401R",
+  "upload": {
+    "maximum_ram_size": 65536,
+    "maximum_size": 262144,
+    "protocol": "dslite"
+  },
+  "url": "https://academics.uccs.edu/mlaubhan/common/MSP432/slau597b.pdf",
+  "vendor": "TI"
+}
