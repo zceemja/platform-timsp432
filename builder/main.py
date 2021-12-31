@@ -88,9 +88,6 @@ if env.get("PROGNAME", "program") == "program":
 if "energia" in env.get("PIOFRAMEWORK", []):
     env.Replace(PIOFRAMEWORK=["arduino"])
 
-if len(env.get("PIOFRAMEWORK", [])) == 0:
-    env.Replace(PIOFRAMEWORK=["arduino"])
-
 # Target: Build executable and linkable firmware
 target_elf = None
 if "nobuild" in COMMAND_LINE_TARGETS:
