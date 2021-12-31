@@ -25,26 +25,25 @@ env.Replace(
     PROGSUFFIX=".elf"
 )
 
-
 env.Append(
     ASFLAGS=["-x", "assembler-with-cpp"],
 
     CCFLAGS=[
         "-Os",
-        "-ffunction-sections",  # place each function in its own section
+        "-ffunction-sections",
         "-fdata-sections",
+        "-mthumb",
         "-mcpu=$BOARD_MCU",
         "-mfpu=fpv4-sp-d16",
         "-mabi=aapcs",
         "-mfloat-abi=hard",
+        "-MMD",
     ],
 
     CXXFLAGS=[
         "-fno-exceptions",
         "-fno-threadsafe-statics",
-        "-ffunction-sections",
-        "-fdata-sections",
-        "-fno-rtti"
+        "-fno-rtti",
     ],
 
     CPPDEFINES=[
@@ -53,11 +52,17 @@ env.Append(
 
     LINKFLAGS=[
         "-Os",
+        "-mthumb",
         "-mcpu=$BOARD_MCU",
-        "-Wl,-gc-sections,-u,main"
+        "-mfpu=fpv4-sp-d16",
+        "-mfloat-abi=hard",
+        "-mabi=aapcs",
+        "-specs=nano.specs",
+        "-specs=rdimon.specs",
+        "-specs=nosys.specs",
     ],
 
-    LIBS=["m"],
+    LIBS=["m", "stdc++", "gcc", "nosys", "c"],
 
     BUILDERS=dict(
         ElfToHex=Builder(
@@ -75,20 +80,18 @@ env.Append(
     )
 )
 
+
 # Allow user to override via pre:script
 if env.get("PROGNAME", "program") == "program":
     env.Replace(PROGNAME="firmware")
 
 if "energia" in env.get("PIOFRAMEWORK", []):
-    sys.stderr.write(
-        "WARNING!!! Using of `framework = energia` in `platformio.ini` is "
-        "deprecated. Please replace with `framework = arduino`.\n")
     env.Replace(PIOFRAMEWORK=["arduino"])
 
-#
-# Target: Build executable and linkable firmware
-#
+if len(env.get("PIOFRAMEWORK", [])) == 0:
+    env.Replace(PIOFRAMEWORK=["arduino"])
 
+# Target: Build executable and linkable firmware
 target_elf = None
 if "nobuild" in COMMAND_LINE_TARGETS:
     target_elf = join("$BUILD_DIR", "${PROGNAME}.elf")

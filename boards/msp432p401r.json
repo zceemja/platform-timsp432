@@ -1,7 +1,7 @@
 {
   "build": {
     "core": "msp432r",
-    "extra_flags": "-DENERGIA_MSP_EXP432P401R -DENERGIA_ARCH_MSP432R -D__MSP432P401R__",
+    "extra_flags": "-DENERGIA_MSP_EXP432P401R -DENERGIA_ARCH_MSP432R -D__MSP432P401R__ -DBOARD_MSP_EXP432P401R",
     "f_cpu": "48000000L",
     "hwids": [
       [

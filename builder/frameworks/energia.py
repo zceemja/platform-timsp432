@@ -1,27 +1,6 @@
-# Copyright 2014-present PlatformIO <contact@platformio.org>
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#    http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 """
-Energia
-
-Energia Wiring-based framework enables pretty much anyone to start easily
-creating microcontroller-based projects and applications. Its easy-to-use
-libraries and functions provide developers of all experience levels to start
-blinking LEDs, buzzing buzzers and sensing sensors more quickly than ever
-before.
-
-http://energia.nu/reference/
+Based on https://github.com/energia/msp432r-core
+References https://energia.nu/reference/
 """
 
 from os.path import isdir, join
@@ -33,8 +12,6 @@ platform = env.PioPlatform()
 
 FRAMEWORK_DIR = platform.get_package_dir("framework-energiamsp432r")
 FRAMEWORK_VERSION = platform.get_package_version("framework-energiamsp432r")
-TIRTOS_DIR = join(platform.get_package_dir("framework-energiamsp432r"), "system", "kernel", "tirtos")
-
 assert isdir(FRAMEWORK_DIR)
 
 board = env.BoardConfig()
@@ -43,33 +20,75 @@ variants_dir = join(
     "$PROJECT_DIR", board.get("build.variants_dir")) if board.get(
         "build.variants_dir", "") else join(FRAMEWORK_DIR, "variants")
 
+core_lib = env.BuildLibrary(
+    join("$BUILD_DIR", "core_%s" % board.get("build.core")),
+    join(FRAMEWORK_DIR, 'cores', board.get("build.core"), 'ti/runtime/wiring'),
+),
+
 env.Append(
     CPPDEFINES=[
         ("ARDUINO", 10807),
-        ("ENERGIA", int(FRAMEWORK_VERSION.split(".")[1]))
+        ("ENERGIA", int(FRAMEWORK_VERSION.split(".")[1])),
+        ("CORE_VERSION", 5252),
+        ("xdc_target_types__", "gnu/targets/arm/std.h"),
+        ("xdc_target_name__", "M4F"),
+        ("xdc_cfg__xheader__", '\\"configPkg/package/cfg/energia_pm4fg.h\\"'),
+        ("xdc__nolocalstring", 1),
+        "_DEFAULT_SOURCE",
     ],
 
     CPPPATH=[
-        join(FRAMEWORK_DIR, "cores", env.BoardConfig().get("build.core")),
         join(variants_dir, board.get("build.variant")),
+        join(FRAMEWORK_DIR, 'system/source'),
+        join(FRAMEWORK_DIR, 'system/energia'),
+        join(FRAMEWORK_DIR, 'cores', board.get("build.core")),
+        join(FRAMEWORK_DIR, 'cores', board.get("build.core"), 'ti/runtime/wiring'),
+        join(FRAMEWORK_DIR, 'cores', board.get("build.core"), 'ti/runtime/wiring/msp432'),
+        join(FRAMEWORK_DIR, 'system/kernel/tirtos/packages/ti/sysbios/posix'),
+        join(FRAMEWORK_DIR, 'system/kernel/tirtos/packages'),
+        join(FRAMEWORK_DIR, 'system/source/ti/devices/msp432p4xx/driverlib'),
+        join(FRAMEWORK_DIR, 'system/source/ti/devices/msp432p4xx/inc'),
+        join(FRAMEWORK_DIR, 'system/source/ti/devices/msp432p4xx/'),
+        join(FRAMEWORK_DIR, 'system/source/third_party/CMSIS/Include'),
+        join(FRAMEWORK_DIR, 'system/kernel/tirtos/boards', board.get("build.variant")),
     ],
 
     LIBSOURCE_DIRS=[
         join(FRAMEWORK_DIR, "libraries")
-    ]
+    ],
+
+    LINKFLAGS=[
+        "-nostartfiles",
+        "-Wl,-u,main",
+        "-Wl,-u,_printf_float,-u,-_scanf_float",
+        "-Wl,--check-sections",
+        "-Wl,--gc-sections",
+    ],
+
+    LIBPATH=[
+        join(FRAMEWORK_DIR, "cores", board.get("build.core")),
+        join(FRAMEWORK_DIR, 'system/energia'),
+        join(FRAMEWORK_DIR, 'system/kernel'),
+        join(FRAMEWORK_DIR, 'system/source'),
+        join(FRAMEWORK_DIR, 'system/kernel/tirtos/packages'),
+        join(FRAMEWORK_DIR, 'cores', board.get("build.core")),
+        join(FRAMEWORK_DIR, 'cores', board.get("build.core"), 'ti/runtime/wiring/msp432'),
+        join(FRAMEWORK_DIR, 'cores', board.get("build.core"), 'ti/runtime/wiring/msp432/variants', board.get("build.variant")),
+        join(FRAMEWORK_DIR, 'system/kernel/tirtos/packages/gnu/targets/arm/libs/install-native/arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard'),
+    ],
+
+    _LIBDIRFLAGS=[
+        core_lib,
+        '-Wl,-T' + join(FRAMEWORK_DIR, "system/energia/linker.cmd"),
+    ],
+
+    LIBS=[
+        core_lib,
+        env.File(join(FRAMEWORK_DIR, "system/source/ti/devices/msp432p4xx/driverlib/gcc/msp432p4xx_driverlib.a")),
+    ],
 )
 
-#
-# Target: Build Core Library
-#
-
-libs = []
-
-libs.append(env.BuildLibrary(
-    join("$BUILD_DIR", "FrameworkEnergia"),
-    join(FRAMEWORK_DIR, "cores", board.get("build.core")),
-    join(TIRTOS_DIR, "packages", "ti"),
-    join(TIRTOS_DIR, "packages", "gnu"),
-))
-
-env.Append(LIBS=libs)
+env.BuildSources(
+    join("$BUILD_DIR", "core_%s_%s" % (board.get("build.core"), board.get("build.variant"))),
+    join(FRAMEWORK_DIR, 'variants', board.get("build.variant"))
+)
