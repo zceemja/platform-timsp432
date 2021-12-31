@@ -29,66 +29,19 @@ env.Append(
     CPPDEFINES=[
         ("ARDUINO", 10807),
         ("ENERGIA", int(FRAMEWORK_VERSION.split(".")[1])),
-        ("CORE_VERSION", 5252),
-        ("xdc_target_types__", "gnu/targets/arm/std.h"),
-        ("xdc_target_name__", "M4F"),
-        ("xdc_cfg__xheader__", '\\"configPkg/package/cfg/energia_pm4fg.h\\"'),
-        ("xdc__nolocalstring", 1),
-        "_DEFAULT_SOURCE",
     ],
+    _LIBDIRFLAGS=[core_lib],
+    LIBS=[core_lib],
+)
 
-    CPPPATH=[
-        join(variants_dir, board.get("build.variant")),
-        join(FRAMEWORK_DIR, 'system/source'),
-        join(FRAMEWORK_DIR, 'system/energia'),
-        join(FRAMEWORK_DIR, 'cores', board.get("build.core")),
-        join(FRAMEWORK_DIR, 'cores', board.get("build.core"), 'ti/runtime/wiring'),
-        join(FRAMEWORK_DIR, 'cores', board.get("build.core"), 'ti/runtime/wiring/msp432'),
-        join(FRAMEWORK_DIR, 'system/kernel/tirtos/packages/ti/sysbios/posix'),
-        join(FRAMEWORK_DIR, 'system/kernel/tirtos/packages'),
-        join(FRAMEWORK_DIR, 'system/source/ti/devices/msp432p4xx/driverlib'),
-        join(FRAMEWORK_DIR, 'system/source/ti/devices/msp432p4xx/inc'),
-        join(FRAMEWORK_DIR, 'system/source/ti/devices/msp432p4xx/'),
-        join(FRAMEWORK_DIR, 'system/source/third_party/CMSIS/Include'),
-        join(FRAMEWORK_DIR, 'system/kernel/tirtos/boards', board.get("build.variant")),
-    ],
-
-    LIBSOURCE_DIRS=[
-        join(FRAMEWORK_DIR, "libraries")
-    ],
-
-    LINKFLAGS=[
-        "-nostartfiles",
-        "-Wl,-u,main",
-        "-Wl,-u,_printf_float,-u,-_scanf_float",
-        "-Wl,--check-sections",
-        "-Wl,--gc-sections",
-    ],
-
-    LIBPATH=[
-        join(FRAMEWORK_DIR, "cores", board.get("build.core")),
-        join(FRAMEWORK_DIR, 'system/energia'),
-        join(FRAMEWORK_DIR, 'system/kernel'),
-        join(FRAMEWORK_DIR, 'system/source'),
-        join(FRAMEWORK_DIR, 'system/kernel/tirtos/packages'),
-        join(FRAMEWORK_DIR, 'cores', board.get("build.core")),
-        join(FRAMEWORK_DIR, 'cores', board.get("build.core"), 'ti/runtime/wiring/msp432'),
-        join(FRAMEWORK_DIR, 'cores', board.get("build.core"), 'ti/runtime/wiring/msp432/variants', board.get("build.variant")),
-        join(FRAMEWORK_DIR, 'system/kernel/tirtos/packages/gnu/targets/arm/libs/install-native/arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard'),
-    ],
-
-    _LIBDIRFLAGS=[
-        core_lib,
-        '-Wl,-T' + join(FRAMEWORK_DIR, "system/energia/linker.cmd"),
-    ],
-
-    LIBS=[
-        core_lib,
-        env.File(join(FRAMEWORK_DIR, "system/source/ti/devices/msp432p4xx/driverlib/gcc/msp432p4xx_driverlib.a")),
-    ],
+env.BuildSources(
+    join("$BUILD_DIR", "arduino_%s" % (board.get("build.core"))),
+    join(FRAMEWORK_DIR, 'extras/arduino'),
 )
 
 env.BuildSources(
     join("$BUILD_DIR", "core_%s_%s" % (board.get("build.core"), board.get("build.variant"))),
-    join(FRAMEWORK_DIR, 'variants', board.get("build.variant"))
+    join(FRAMEWORK_DIR, 'variants', board.get("build.variant")),
 )
+
+env.SConscript("tirtos.py")

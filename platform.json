@@ -25,6 +25,10 @@
     "energia": {
       "package": "framework-energiamsp432r",
       "script": "builder/frameworks/energia.py"
+    },
+    "tirtos": {
+      "package": "framework-energiamsp432r",
+      "script": "builder/frameworks/tirtos.py"
     }
   },
   "packages": {

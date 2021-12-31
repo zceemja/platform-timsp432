@@ -8,7 +8,7 @@ int main(void) {
 
     volatile int i;
     while(1){
-        for (i = 0; i < 1000000; i++);  // Delay
+        for (i = 0; i < 100000; i++);  // Delay
         P1OUT ^= BIT0;  // toggle the LED
     }
 

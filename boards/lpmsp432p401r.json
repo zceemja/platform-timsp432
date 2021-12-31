@@ -13,7 +13,8 @@
     "variant": "MSP_EXP432P401R"
   },
   "frameworks": [
-    "arduino"
+    "arduino",
+    "tirtos"
   ],
   "name": "TI LaunchPad MSP‑EXP432P401R",
   "upload": {
