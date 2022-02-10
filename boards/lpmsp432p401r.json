@@ -14,7 +14,8 @@
   },
   "frameworks": [
     "arduino",
-    "tirtos"
+    "tirtos",
+    "cmsis"
   ],
   "name": "TI LaunchPad MSP‑EXP432P401R",
   "upload": {
