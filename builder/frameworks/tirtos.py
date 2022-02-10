@@ -52,6 +52,8 @@ env.Append(
 
     LINKFLAGS=[
         "-nostartfiles",
+        "-specs=nano.specs",
+        "-specs=rdimon.specs",
         "-Wl,-u,main",
         "-Wl,-u,_printf_float,-u,-_scanf_float",
         "-Wl,--check-sections",

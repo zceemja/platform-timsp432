@@ -37,6 +37,7 @@ env.Append(
         "-mfpu=fpv4-sp-d16",
         "-mabi=aapcs",
         "-mfloat-abi=hard",
+        "-march=armv7e-m",
         "-MMD",
     ],
 
@@ -47,7 +48,8 @@ env.Append(
     ],
 
     CPPDEFINES=[
-        ("F_CPU", "$BOARD_F_CPU")
+        ("F_CPU", "$BOARD_F_CPU"),
+        "gcc",
     ],
 
     LINKFLAGS=[
@@ -57,8 +59,6 @@ env.Append(
         "-mfpu=fpv4-sp-d16",
         "-mfloat-abi=hard",
         "-mabi=aapcs",
-        "-specs=nano.specs",
-        "-specs=rdimon.specs",
         "-specs=nosys.specs",
     ],
 
