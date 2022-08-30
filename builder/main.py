@@ -1,9 +1,11 @@
 import sys
 from os.path import join
 
-from SCons.Script import (COMMAND_LINE_TARGETS, AlwaysBuild, Builder, Default, DefaultEnvironment)
+from SCons.Script import (ARGUMENTS, COMMAND_LINE_TARGETS, AlwaysBuild, Builder, Default, DefaultEnvironment)
 
 env = DefaultEnvironment()
+platform = env.PioPlatform()
+board = env.BoardConfig()
 
 env.Replace(
     AR="arm-none-eabi-ar",
@@ -16,6 +18,8 @@ env.Replace(
     SIZETOOL="arm-none-eabi-size",
 
     ARFLAGS=["rc"],
+
+    PIODEBUGFLAGS=["-O0", "-g3", "-ggdb", "-gdwarf-2"],
 
     SIZEPROGREGEXP=r"^(?:\.text|\.data|\.rodata|\.text.align|\.ARM.exidx)\s+(\d+).*",
     SIZEDATAREGEXP=r"^(?:\.data|\.bss|\.noinit)\s+(\d+).*",
@@ -113,7 +117,6 @@ AlwaysBuild(target_size)
 # Target: Upload firmware
 #
 
-upload_target = target_firm
 if env.subst("$UPLOAD_PROTOCOL") == "dslite":
     env.Replace(
         UPLOADER=join(env.PioPlatform().get_package_dir(
@@ -125,13 +128,23 @@ if env.subst("$UPLOAD_PROTOCOL") == "dslite":
         ],
         UPLOADCMD="$UPLOADER $UPLOADERFLAGS $SOURCES"
     )
-    upload_target = target_elf
-    upload_actions = [env.VerboseAction("$UPLOADCMD", "Uploading $SOURCE")]
 
-target_upload = env.Alias("upload", upload_target,
-                          env.VerboseAction("$UPLOADCMD", "Uploading $SOURCE"))
+elif env.subst("$UPLOAD_PROTOCOL") == "openocd":
+    openocd_args = board.get("debug.tools.mspdebug.server.arguments", [])
+    openocd_args.extend(["-c", "program {$SOURCE} reset; shutdown;"])
+    openocd_args = [
+        f.replace("$PACKAGE_DIR", platform.get_package_dir("tool-openocd") or "")
+        for f in openocd_args
+    ]
+    print("ARGS=", openocd_args)
+    env.Replace(
+        UPLOADER="openocd",
+        UPLOADERFLAGS=openocd_args,
+        UPLOADCMD="$UPLOADER $UPLOADERFLAGS"
+    )
+
+target_upload = env.Alias("upload", target_firm, env.VerboseAction("$UPLOADCMD", "Uploading $SOURCE"))
 AlwaysBuild(target_upload)
-
 #
 # Default targets
 #

@@ -17,11 +17,31 @@
     "tirtos",
     "cmsis"
   ],
+  "debug": {
+    "svd_path": "MSP432P401R.svd",
+    "tools": {
+      "mspdebug": {
+        "onboard": true,
+        "server": {
+          "package": "tool-openocd",
+          "executable": "bin/openocd",
+          "arguments": [
+            "-s", "$PACKAGE_DIR/scripts",
+            "-f", "board/ti_msp432_launchpad.cfg"
+          ]
+        }
+      }
+    }
+  },
   "name": "TI LaunchPad MSP‑EXP432P401R",
   "upload": {
     "maximum_ram_size": 65536,
     "maximum_size": 262144,
-    "protocol": "dslite"
+    "protocol": "openocd",
+    "protocols": [
+      "openocd",
+      "dslite"
+    ]
   },
   "url": "https://academics.uccs.edu/mlaubhan/common/MSP432/slau597b.pdf",
   "vendor": "TI"
